@@ -1,20 +1,20 @@
 # Install pipenv
 ```
-pip install pipenv
-pipenv install
+pip install virtualenvwrapper
+mkvirtualenv deep
 ```
 
 # Set up
 ```
 git pull origin master
-pipenv install
+workon deep
+pip install -r requirements.txt
 
 
-pipenv shell
+# Running the program
+```
+workon deep
 python main.py
-exit
-
-pipenv run python main.py
 ```
 
 ```

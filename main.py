@@ -13,6 +13,7 @@ print(y_train)
 def reshapeX(x):
     dim = ( x.shape[0], x.shape[1]*x.shape[2]*x.shape[3])
     return keras.utils.normalize(x.reshape(dim))
+    # adasd
 
 x_train = reshapeX(x_train)
 x_test = reshapeX(x_test)
@@ -31,7 +32,7 @@ model.compile(loss='categorical_crossentropy',
               metrics=['accuracy'])
 
 print(x_train.shape, y_train.shape)
-model.fit(x_train, y_train, epochs=20, batch_size=32)
+model.fit(x_train, y_train, epochs=5, batch_size=32)
 
 loss, acc = model.evaluate(x_test, y_test, batch_size=128)
 
