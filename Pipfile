@@ -9,6 +9,9 @@ name = "pypi"
 
 keras = "*"
 tensorflow = "*"
+pandas = "*"
+tqdm = "*"
+scikit-image = "*"
 
 
 [dev-packages]
