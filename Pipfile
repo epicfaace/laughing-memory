@@ -12,6 +12,8 @@ tensorflow = "*"
 pandas = "*"
 tqdm = "*"
 scikit-image = "*"
+scipy = "*"
+seaborn = "*"
 
 
 [dev-packages]
