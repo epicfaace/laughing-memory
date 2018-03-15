@@ -83,7 +83,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
     print("Size of the test set: " + str(len(test_ids)))
     # Get and resize train images and masks(Initialize containers for storing downsampled images)
 
-    num_aug = 10
+    num_aug = 0
     X_train_aug = np.zeros((len(train_ids) * num_aug, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
     Y_train_aug = np.zeros((len(train_ids) * num_aug, IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
 
@@ -126,22 +126,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         Y_train[n] = mask
         #Y_train.append(mask) #Stores all the masks (true labels in a tensor of order 4: 1 tensor of order 3 per mask)
         
-        #v_min, v_max = np.percentile(img, (0.2, 99.8))
-        #better_img = exposure.rescale_intensity(img, in_range=(v_min, v_max))
-        X_train_aug[num_aug*n + 0] = img[:, ::-1] # horizontal flip
-        Y_train_aug[num_aug*n + 0] = np.fliplr(mask)
-        X_train_aug[num_aug*n + 1] = img[::-1, :] # vertical flip
-        Y_train_aug[num_aug*n + 1] = np.flipud(mask)
-        X_train_aug[num_aug*n + 2] = elastic_transform(img)
-        Y_train_aug[num_aug*n + 2] = elastic_transform(mask)
         
-        for index in range(3, 10):
-            randH = random.randint(20,h - 20)
-            randW = random.randint(20,w - 20)
-            X_train_aug[num_aug*n + index] = skimage.transform.resize(img[:randH, :randW], (h, w), mode='constant', preserve_range=True)
-            Y_train_aug[num_aug*n + index] = skimage.transform.resize(mask[:randH, :randW], (h, w), mode='constant', preserve_range=True)
-
-        break
         """skimage.io.imshow(X_train[n])
         plt.show()
         skimage.io.imshow(np.squeeze(Y_train[n]))
@@ -160,6 +145,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         skimage.io.imshow(np.squeeze(Y_train_aug[3*n+3]))
         plt.show()
         break"""
+        break
 
     print('\n Training images succesfully downsampled')
     # Get and resize test images
@@ -175,7 +161,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         X_test[n] = img
         
     print('\n Test images successfully downsampled!')
-    return np.concatenate((X_train_aug, X_train), axis=0), np.concatenate((Y_train_aug, Y_train), axis=0), train_ids, X_test
+    return np.concatenate((X_train_aug, X_train), axis=0), np.concatenate((Y_train_aug, Y_train), axis=0), train_ids, X_test, sizes_test
 
 # ls -l
 
@@ -188,7 +174,7 @@ IMG_HEIGHT = 256
 IMG_CHANNELS = 3
 TRAIN_PATH = 'Data/stage1_train/'
 TEST_PATH = 'Data/stage1_test/'
-X_train, Y_train, train_ids, X_test = data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)
+X_train, Y_train, train_ids, X_test, sizes_test = data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)
 
 
 

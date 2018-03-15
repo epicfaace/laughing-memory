@@ -175,7 +175,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         X_test[n] = img
         
     print('\n Test images successfully downsampled!')
-    return np.concatenate((X_train_aug, X_train), axis=0), np.concatenate((Y_train_aug, Y_train), axis=0), train_ids, X_test
+    return np.concatenate((X_train_aug, X_train), axis=0), np.concatenate((Y_train_aug, Y_train), axis=0), train_ids, X_test, sizes_test
 
 # ls -l
 
@@ -188,7 +188,7 @@ IMG_HEIGHT = 256
 IMG_CHANNELS = 3
 TRAIN_PATH = 'Data/stage1_train/'
 TEST_PATH = 'Data/stage1_test/'
-X_train, Y_train, train_ids, X_test = data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)
+X_train, Y_train, train_ids, X_test, sizes_test = data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)
 
 
 
