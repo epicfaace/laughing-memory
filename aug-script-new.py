@@ -64,14 +64,6 @@ import sys
 import random
 from tqdm import tqdm
 import numpy as np
-from .elastic_transform import elastic_transform
-from google.colab import files
-
-def data_aug_download(X_train, Y_train, DATA_AUG_NAME="data-aug"):
-    np.save(DATA_AUG_NAME + '-X_train.npy', X_train)
-    np.save(DATA_AUG_NAME + '-Y_train.npy', Y_train)
-    files.download(DATA_AUG_NAME + '-X_train.npy')
-    files.download(DATA_AUG_NAME + '-Y_train.npy')
 
 def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
     #os.walk example
