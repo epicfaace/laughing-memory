@@ -33,7 +33,7 @@ import datetime
 
 MODEL_NAME = 'model-dsbowl2018-Data-Aug-10-test-1-sample-MeanIoU-1e-Res256'
 d = datetime.date.today()
-DIR_NAME = 'Submission Results/{:02d}{:02d}'.format(d.month, d.day)
+DIR_NAME = 'Submission Results/{:02d}{:02d}/{}'.format(d.month, d.day, MODEL_NAME)
 MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
 
 import pathlib
@@ -502,7 +502,7 @@ for i in range(len(preds_test)):
                                        mode='constant', preserve_range=True))
 
 # Perform a sanity check on some random training samples
-ix = random.randint(0, len(preds_train_t))
+"""ix = random.randint(0, len(preds_train_t))
 
 skimage.io.imshow(X_train[ix])
 plt.show()
@@ -520,7 +520,7 @@ skimage.io.imshow(np.squeeze(Y_train[int(Y_train.shape[0]*0.9):][ix]))
 plt.show()
 skimage.io.imshow(np.squeeze(preds_val_t[ix]))
 plt.show()
-
+"""
 """### V. Encode and submit results"""
 
 # Run-length encoding from https://www.kaggle.com/rakhlin/fast-run-length-encoding-python
