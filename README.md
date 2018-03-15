@@ -32,3 +32,7 @@ Github Desktop
 
 cd git/laughing-memory
 ssh -i "laughing-memory-new.pem" ubuntu@ec2-52-91-185-224.compute-1.amazonaws.com
+
+# tmux, ctrl + b & d
+# python aug-script-new.py
+# tmux attach -d

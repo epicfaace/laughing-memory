@@ -12,6 +12,7 @@ The architecture used is the so-called U-Net, which is very common for image seg
 
 ### I. Initial Setup 
 
+
 #### a) Libraries
 """
 
@@ -406,7 +407,7 @@ MODEL_WEIGHTS_FILE_NAME = MODEL_NAME + ".h5"
 
 print(len(X_train) / 670 * 0.5)
 
-ls -l
+# ls -l
 
 ### Fit model
 
@@ -437,7 +438,7 @@ plt.ylabel('Mean IoU')
 plt.xlabel('Epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
-fig_accuracy.savefig('Accuracy_model-dsbowl2018-MeanIoU-50e-Res256.png')
+fig_accuracy.savefig('Accuracy_model-'+ MODEL_NAME + '.png')
 
 # summarize history for loss
 fig_loss = plt.figure(2)
@@ -448,9 +449,9 @@ plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
-fig_loss.savefig('Loss_model-dsbowl2018-MeanIoU-50e-Res256.png')
+fig_loss.savefig('Loss_model-'+MODEL_NAME+'.png')
 
-ls -l
+# ls -l
 
 
 """#### V. Make predictions"""
