@@ -29,7 +29,15 @@ The architecture used is the so-called U-Net, which is very common for image seg
 
 #@title Save augmented data
 
+import datetime
+
 MODEL_NAME = 'model-dsbowl2018-Data-Aug-10-test-1-sample-MeanIoU-1e-Res256'
+d = datetime.date.today()
+DIR_NAME = 'Submission Results/{:02d}{:02d}'.format(d.month, d.day)
+MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
+
+import pathlib
+pathlib.Path(MODEL_NAME).mkdir(parents=True, exist_ok=True) 
 
 import numpy as np
 import cv2
@@ -125,7 +133,22 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         
         Y_train[n] = mask
         #Y_train.append(mask) #Stores all the masks (true labels in a tensor of order 4: 1 tensor of order 3 per mask)
+        break
+        #v_min, v_max = np.percentile(img, (0.2, 99.8))
+        #better_img = exposure.rescale_intensity(img, in_range=(v_min, v_max))
+        X_train_aug[num_aug*n + 0] = img[:, ::-1] # horizontal flip
+        Y_train_aug[num_aug*n + 0] = np.fliplr(mask)
+        X_train_aug[num_aug*n + 1] = img[::-1, :] # vertical flip
+        Y_train_aug[num_aug*n + 1] = np.flipud(mask)
+        X_train_aug[num_aug*n + 2] = elastic_transform(img)
+        Y_train_aug[num_aug*n + 2] = elastic_transform(mask)
         
+        for index in range(3, 10):
+            randH = random.randint(20,h - 20)
+            randW = random.randint(20,w - 20)
+            X_train_aug[num_aug*n + index] = skimage.transform.resize(img[:randH, :randW], (h, w), mode='constant', preserve_range=True)
+            Y_train_aug[num_aug*n + index] = skimage.transform.resize(mask[:randH, :randW], (h, w), mode='constant', preserve_range=True)
+
         
         """skimage.io.imshow(X_train[n])
         plt.show()
@@ -145,7 +168,6 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         skimage.io.imshow(np.squeeze(Y_train_aug[3*n+3]))
         plt.show()
         break"""
-        break
 
     print('\n Training images succesfully downsampled')
     # Get and resize test images
@@ -161,7 +183,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         X_test[n] = img
         
     print('\n Test images successfully downsampled!')
-    return np.concatenate((X_train_aug, X_train), axis=0), np.concatenate((Y_train_aug, Y_train), axis=0), train_ids, X_test, sizes_test
+    return np.concatenate((X_train_aug, X_train), axis=0), np.concatenate((Y_train_aug, Y_train), axis=0), train_ids, test_ids, X_test, sizes_test
 
 # ls -l
 
@@ -174,7 +196,7 @@ IMG_HEIGHT = 256
 IMG_CHANNELS = 3
 TRAIN_PATH = 'Data/stage1_train/'
 TEST_PATH = 'Data/stage1_test/'
-X_train, Y_train, train_ids, X_test, sizes_test = data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)
+X_train, Y_train, train_ids,  test_ids, X_test, sizes_test = data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)
 
 
 
@@ -438,7 +460,7 @@ plt.ylabel('Mean IoU')
 plt.xlabel('Epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
-fig_accuracy.savefig('Accuracy_model-'+ MODEL_NAME + '.png')
+fig_accuracy.savefig( MODEL_NAME + '-Accuracy_model' + '.png')
 
 # summarize history for loss
 fig_loss = plt.figure(2)
@@ -449,7 +471,7 @@ plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
-fig_loss.savefig('Loss_model-'+MODEL_NAME+'.png')
+fig_loss.savefig(MODEL_NAME+'-Loss_model' + '.png')
 
 # ls -l
 

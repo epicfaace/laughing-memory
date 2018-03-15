@@ -29,7 +29,15 @@ The architecture used is the so-called U-Net, which is very common for image seg
 
 #@title Save augmented data
 
+import datetime
+
 MODEL_NAME = 'model-dsbowl2018-Data-Aug-10-test-1-sample-MeanIoU-1e-Res256'
+d = datetime.date.today()
+DIR_NAME = 'Submission Results/{:02d}{:02d}'.format(d.month, d.day)
+MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
+
+import pathlib
+pathlib.Path(MODEL_NAME).mkdir(parents=True, exist_ok=True) 
 
 import numpy as np
 import cv2
@@ -175,7 +183,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         X_test[n] = img
         
     print('\n Test images successfully downsampled!')
-    return np.concatenate((X_train_aug, X_train), axis=0), np.concatenate((Y_train_aug, Y_train), axis=0), train_ids, X_test, sizes_test
+    return np.concatenate((X_train_aug, X_train), axis=0), np.concatenate((Y_train_aug, Y_train), axis=0), train_ids, test_ids, X_test, sizes_test
 
 # ls -l
 
@@ -188,7 +196,7 @@ IMG_HEIGHT = 256
 IMG_CHANNELS = 3
 TRAIN_PATH = 'Data/stage1_train/'
 TEST_PATH = 'Data/stage1_test/'
-X_train, Y_train, train_ids, X_test, sizes_test = data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)
+X_train, Y_train, train_ids,  test_ids, X_test, sizes_test = data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS)
 
 
 
@@ -452,7 +460,7 @@ plt.ylabel('Mean IoU')
 plt.xlabel('Epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
-fig_accuracy.savefig('Accuracy_model-'+ MODEL_NAME + '.png')
+fig_accuracy.savefig( MODEL_NAME + '-Accuracy_model' + '.png')
 
 # summarize history for loss
 fig_loss = plt.figure(2)
@@ -463,7 +471,7 @@ plt.ylabel('Loss')
 plt.xlabel('Epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.show()
-fig_loss.savefig('Loss_model-'+MODEL_NAME+'.png')
+fig_loss.savefig(MODEL_NAME+'-Loss_model' + '.png')
 
 # ls -l
 
