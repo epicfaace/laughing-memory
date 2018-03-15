@@ -31,14 +31,15 @@ The architecture used is the so-called U-Net, which is very common for image seg
 
 import datetime
 
-MODEL_NAME = 'model-dsbowl2018-Data-Aug-10-test-1-sample-MeanIoU-1e-Res256'
+MODEL_NAME = 'model-dsbowl2018-Data-Aug-10-sample-MeanIoU-20e-Res256'
 d = datetime.date.today()
 DIR_NAME = 'Submission Results/{:02d}{:02d}/{}'.format(d.month, d.day, MODEL_NAME)
 MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
-
+from shutil import copy2
 import pathlib
+import os
 pathlib.Path(MODEL_NAME).mkdir(parents=True, exist_ok=True) 
-
+copy2(os.path.basename(__file__), DIR_NAME)
 import numpy as np
 import cv2
 from scipy.ndimage.interpolation import map_coordinates
@@ -438,7 +439,7 @@ print(len(X_train) / 670 * 0.5)
 # Keras models are trained on Numpy arrays of input data and labels. For training a model, you will typically use the  fit function.
 earlystopper = keras.callbacks.EarlyStopping(patience=100, verbose=1) 
 checkpointer = keras.callbacks.ModelCheckpoint(MODEL_CHECKPOINT_FILE_NAME, verbose=1, save_best_only=True)
-results = model.fit((X_train), (Y_train), validation_split=len(train_ids) / len(X_train) * 0.1, batch_size=16, epochs=1, 
+results = model.fit((X_train), (Y_train), validation_split=len(train_ids) / len(X_train) * 0.1, batch_size=16, epochs=20, 
                     callbacks=[earlystopper, checkpointer])
 
 # from keras.models import load_model
