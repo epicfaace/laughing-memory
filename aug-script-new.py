@@ -31,7 +31,7 @@ The architecture used is the so-called U-Net, which is very common for image seg
 
 import datetime
 
-MODEL_NAME = 'model-dsbowl2018-Data-Aug-10-sample-MeanIoU-20e-Res256'
+MODEL_NAME = 'model-dsbowl2018-Data-Aug-10-BN-MeanIoU-100e-Res256'
 d = datetime.date.today()
 DIR_NAME = 'Submission Results/{:02d}{:02d}/{}'.format(d.month, d.day, MODEL_NAME)
 MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
@@ -292,6 +292,8 @@ A Keras tensor is a tensor object from the underlying backend (Theano, TensorFlo
 Wraps arbitrary expression as a Layer object. (see [doc](https://keras.io/layers/core/))
 """
 
+# Batch Norm!
+
 # Build U-Net model
 
 from keras.layers.merge import concatenate
@@ -299,7 +301,6 @@ from keras.layers.merge import concatenate
 #### Input Layer
 
 inputs = keras.layers.Input((IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS)) # Input() is used to instantiate a Keras tensor
-#inputs = keras.layers.Input((None, None, IMG_CHANNELS))
 
 s = keras.layers.core.Lambda(lambda x: x / 255) (inputs) #Normalize all pixels
 
@@ -308,90 +309,152 @@ s = keras.layers.core.Lambda(lambda x: x / 255) (inputs) #Normalize all pixels
 c1 = keras.layers.convolutional.Conv2D(16, (3, 3), 
                                        activation='elu', kernel_initializer='he_normal', padding='same')(s)  #params: num filters, kernel_size
 
-c1 = keras.layers.core.Dropout(0.1) (c1)
+c1 = keras.layers.BatchNormalization()(c1)
+
+c1 = keras.layers.core.Dropout(0.3) (c1)
 
 c1 = keras.layers.convolutional.Conv2D(16, (3, 3), 
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (c1)
+                                       activation='elu', kernel_initializer='he_normal', padding='same', 
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (c1)
+
+c1 = keras.layers.BatchNormalization()(c1)
 
 p1 = keras.layers.pooling.MaxPooling2D((2, 2)) (c1)
 
 ##### Block 2: 2 Conv + Dropout + Maxpool
 
 c2 = keras.layers.convolutional.Conv2D(32, (3, 3), 
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (p1)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (p1)
 
-c2 = keras.layers.core.Dropout(0.1) (c2)
+c2 = keras.layers.BatchNormalization()(c2)
+
+c2 = keras.layers.core.Dropout(0.3) (c2)
 
 c2 = keras.layers.convolutional.Conv2D(32, (3, 3),  
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (c2)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (c2)
+
+c2 = keras.layers.BatchNormalization()(c2)
 
 p2 = keras.layers.pooling.MaxPooling2D((2, 2)) (c2)
 
 ##### Block 3: 2 Conv + Dropout + Maxpool
 
 c3 = keras.layers.convolutional.Conv2D(64, (3, 3),   
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (p2)
-c3 = keras.layers.core.Dropout(0.2) (c3)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (p2)
+
+c3 = keras.layers.BatchNormalization()(c3)
+
+c3 = keras.layers.core.Dropout(0.3) (c3)
+
 c3 = keras.layers.convolutional.Conv2D(64, (3, 3),   
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (c3)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (c3)
+
+c3 = keras.layers.BatchNormalization()(c3)
+
 p3 = keras.layers.pooling.MaxPooling2D((2, 2)) (c3)
 
 ##### Block 4: 2 Conv + Dropout + Maxpool
 
 c4 = keras.layers.convolutional.Conv2D(128, (3, 3),  
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (p3)
-c4 = keras.layers.core.Dropout(0.2) (c4)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (p3)
+
+c4 = keras.layers.BatchNormalization()(c4)
+
+c4 = keras.layers.core.Dropout(0.4) (c4)
+
 c4 = keras.layers.convolutional.Conv2D(128, (3, 3),  
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (c4)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (c4)
+
+c4 = keras.layers.BatchNormalization()(c4)
+
 p4 = keras.layers.pooling.MaxPooling2D(pool_size=(2, 2)) (c4)
 
 ##### Block 5: 2 Conv + Dropout + Maxpool
 
 c5 = keras.layers.convolutional.Conv2D(256, (3, 3),  
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (p4)
-c5 = keras.layers.core.Dropout(0.3) (c5)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (p4)
+
+c5 = keras.layers.BatchNormalization()(c5)
+
+c5 = keras.layers.core.Dropout(0.4) (c5)
+
 c5 = keras.layers.convolutional.Conv2D(256, (3, 3),  
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (c5)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (c5)
+
+c5 = keras.layers.BatchNormalization()(c5)
 
 #### Block 6: Deconvolution + Concatenate + Convolution + Dropout + Convolution
 
-u6 = keras.layers.convolutional.Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (c5)
+u6 = keras.layers.convolutional.Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same', 
+                                                kernel_regularizer=keras.regularizers.l2(0.)) (c5)
+
 u6 = concatenate([u6, c4])
+
 c6 = keras.layers.convolutional.Conv2D(128, (3, 3),  
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (u6)
-c6 = keras.layers.core.Dropout(0.2) (c6)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (u6)
+
+c6 = keras.layers.core.Dropout(0.4) (c6)
+
 c6 = keras.layers.convolutional.Conv2D(128, (3, 3),  
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (c6)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (c6)
 
 #### Block 7: Deconvolution + Concatenate + Convolution + Dropout + Convolution
 
-u7 = keras.layers.convolutional.Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same') (c6)  
+u7 = keras.layers.convolutional.Conv2DTranspose(64, (2, 2), strides=(2, 2), padding='same', 
+                                               kernel_regularizer=keras.regularizers.l2(0.)) (c6)  
 u7 = concatenate([u7, c3])
+
 c7 = keras.layers.convolutional.Conv2D(64, (3, 3),   
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (u7)
-c7 = keras.layers.core.Dropout(0.2) (c7)
+                                       activation='elu', kernel_initializer='he_normal', padding='same', 
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (u7)
+c7 = keras.layers.core.Dropout(0.4) (c7)
 c7 = keras.layers.convolutional.Conv2D(64, (3, 3),   
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (c7)
+                                       activation='elu', kernel_initializer='he_normal', padding='same', 
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (c7)
 
 #### Block 8: Deconvolution + Concatenate + Convolution + Dropout + Convolution
 
-u8 = keras.layers.convolutional.Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same') (c7)
+u8 = keras.layers.convolutional.Conv2DTranspose(32, (2, 2), strides=(2, 2), padding='same', 
+                                                kernel_regularizer=keras.regularizers.l2(0.)) (c7)
+
 u8 = concatenate([u8, c2])
+
 c8 = keras.layers.convolutional.Conv2D(32, (3, 3),   
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (u8)
-c8 = keras.layers.core.Dropout(0.1) (c8)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (u8)
+
+c8 = keras.layers.core.Dropout(0.3) (c8)
+
 c8 = keras.layers.convolutional.Conv2D(32, (3, 3),   
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (c8)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (c8)
 
 #### Block 9: Deconvolution + Concatenate + Convolution + Dropout + Convolution
 
-u9 = keras.layers.convolutional.Conv2DTranspose(16, (2, 2), strides=(2, 2), padding='same') (c8)
+u9 = keras.layers.convolutional.Conv2DTranspose(16, (2, 2), strides=(2, 2), padding='same', 
+                                               kernel_regularizer=keras.regularizers.l2(0.)) (c8)
+
 u9 = concatenate([u9, c1], axis=3)
+
 c9 = keras.layers.convolutional.Conv2D(16, (3, 3),   
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (u9)
-c9 = keras.layers.core.Dropout(0.1) (c9)
+                                       activation='elu', kernel_initializer='he_normal', padding='same', 
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (u9)
+
+c9 = keras.layers.core.Dropout(0.3) (c9)
+
 c9 = keras.layers.convolutional.Conv2D(16, (3, 3),   
-                                       activation='elu', kernel_initializer='he_normal', padding='same') (c9)
+                                       activation='elu', kernel_initializer='he_normal', padding='same',
+                                       kernel_regularizer=keras.regularizers.l2(0.)) (c9)
 
 #### Output Layer: Logistic Unit
 
@@ -439,7 +502,7 @@ print(len(X_train) / 670 * 0.5)
 # Keras models are trained on Numpy arrays of input data and labels. For training a model, you will typically use the  fit function.
 earlystopper = keras.callbacks.EarlyStopping(patience=100, verbose=1) 
 checkpointer = keras.callbacks.ModelCheckpoint(MODEL_CHECKPOINT_FILE_NAME, verbose=1, save_best_only=True)
-results = model.fit((X_train), (Y_train), validation_split=len(train_ids) / len(X_train) * 0.1, batch_size=16, epochs=20, 
+results = model.fit((X_train), (Y_train), validation_split=len(train_ids) / len(X_train) * 0.1, batch_size=16, epochs=100, 
                     callbacks=[earlystopper, checkpointer])
 
 # from keras.models import load_model
