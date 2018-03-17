@@ -31,7 +31,7 @@ The architecture used is the so-called U-Net, which is very common for image seg
 
 import datetime
 
-MODEL_NAME = 'model-dsbowl2018-Data-Aug-10-BN-dropout0.2-MeanIoU-100e-Res256'
+MODEL_NAME = 'model-dsbowl2018-Data-Aug-2-lr-ud-BN-bestOnlyFalse-dropout0.2-MeanIoU-100e-Res256'
 d = datetime.date.today()
 DIR_NAME = 'Submission Results/{:02d}{:02d}/{}'.format(d.month, d.day, MODEL_NAME)
 MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
@@ -92,7 +92,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
     print("Size of the test set: " + str(len(test_ids)))
     # Get and resize train images and masks(Initialize containers for storing downsampled images)
 
-    num_aug = 10
+    num_aug = 2
     X_train_aug = np.zeros((len(train_ids) * num_aug, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
     Y_train_aug = np.zeros((len(train_ids) * num_aug, IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
 
@@ -141,7 +141,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         Y_train_aug[num_aug*n + 0] = np.fliplr(mask)
         X_train_aug[num_aug*n + 1] = img[::-1, :] # vertical flip
         Y_train_aug[num_aug*n + 1] = np.flipud(mask)
-        X_train_aug[num_aug*n + 2] = elastic_transform(img)
+        """X_train_aug[num_aug*n + 2] = elastic_transform(img)
         Y_train_aug[num_aug*n + 2] = elastic_transform(mask)
         
         for index in range(3, 10):
@@ -150,7 +150,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
             X_train_aug[num_aug*n + index] = skimage.transform.resize(img[:randH, :randW], (h, w), mode='constant', preserve_range=True)
             Y_train_aug[num_aug*n + index] = skimage.transform.resize(mask[:randH, :randW], (h, w), mode='constant', preserve_range=True)
 
-        
+        """ 
         """skimage.io.imshow(X_train[n])
         plt.show()
         skimage.io.imshow(np.squeeze(Y_train[n]))
@@ -501,7 +501,7 @@ print(len(X_train) / 670 * 0.5)
 
 # Keras models are trained on Numpy arrays of input data and labels. For training a model, you will typically use the  fit function.
 earlystopper = keras.callbacks.EarlyStopping(patience=100, verbose=1) 
-checkpointer = keras.callbacks.ModelCheckpoint(MODEL_CHECKPOINT_FILE_NAME, verbose=1, save_best_only=True)
+checkpointer = keras.callbacks.ModelCheckpoint(MODEL_CHECKPOINT_FILE_NAME, verbose=1, save_best_only=False)
 results = model.fit((X_train), (Y_train), validation_split=len(train_ids) / len(X_train) * 0.1, batch_size=16, epochs=100, 
                     callbacks=[earlystopper, checkpointer])
 
