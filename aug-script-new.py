@@ -30,8 +30,8 @@ The architecture used is the so-called U-Net, which is very common for image seg
 #@title Save augmented data
 
 import datetime
-
-MODEL_NAME = 'model-dsbowl2018-Data-Aug-2-lr-ud-BN-bestOnlyFalse-dropout0.2-MeanIoU-100e-Res256'
+# Notes: this is the same model as (Unet-MeanIoU-100e-Res256-BN-dropA0.2.ipynb - score .339), but with data aug h & v added.
+MODEL_NAME = 'model-dsbowl2018-Data-Aug-2-lr-ud-BN-bestOnlyTrue-dropA0.3334444333-MeanIoU-100e-Res256'
 d = datetime.date.today()
 DIR_NAME = 'Submission Results/{:02d}{:02d}/{}'.format(d.month, d.day, MODEL_NAME)
 MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
@@ -293,7 +293,6 @@ Wraps arbitrary expression as a Layer object. (see [doc](https://keras.io/layers
 """
 
 # Batch Norm!
-
 # Build U-Net model
 
 from keras.layers.merge import concatenate
@@ -311,7 +310,7 @@ c1 = keras.layers.convolutional.Conv2D(16, (3, 3),
 
 c1 = keras.layers.BatchNormalization()(c1)
 
-c1 = keras.layers.core.Dropout(0.2) (c1)
+c1 = keras.layers.core.Dropout(0.3) (c1)
 
 c1 = keras.layers.convolutional.Conv2D(16, (3, 3), 
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
@@ -329,7 +328,7 @@ c2 = keras.layers.convolutional.Conv2D(32, (3, 3),
 
 c2 = keras.layers.BatchNormalization()(c2)
 
-c2 = keras.layers.core.Dropout(0.2) (c2)
+c2 = keras.layers.core.Dropout(0.3) (c2)
 
 c2 = keras.layers.convolutional.Conv2D(32, (3, 3),  
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -347,7 +346,7 @@ c3 = keras.layers.convolutional.Conv2D(64, (3, 3),
 
 c3 = keras.layers.BatchNormalization()(c3)
 
-c3 = keras.layers.core.Dropout(0.2) (c3)
+c3 = keras.layers.core.Dropout(0.3) (c3)
 
 c3 = keras.layers.convolutional.Conv2D(64, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -365,7 +364,7 @@ c4 = keras.layers.convolutional.Conv2D(128, (3, 3),
 
 c4 = keras.layers.BatchNormalization()(c4)
 
-c4 = keras.layers.core.Dropout(0.2) (c4)
+c4 = keras.layers.core.Dropout(0.4) (c4)
 
 c4 = keras.layers.convolutional.Conv2D(128, (3, 3),  
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -383,7 +382,7 @@ c5 = keras.layers.convolutional.Conv2D(256, (3, 3),
 
 c5 = keras.layers.BatchNormalization()(c5)
 
-c5 = keras.layers.core.Dropout(0.2) (c5)
+c5 = keras.layers.core.Dropout(0.4) (c5)
 
 c5 = keras.layers.convolutional.Conv2D(256, (3, 3),  
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -402,7 +401,7 @@ c6 = keras.layers.convolutional.Conv2D(128, (3, 3),
                                        activation='elu', kernel_initializer='he_normal', padding='same',
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u6)
 
-c6 = keras.layers.core.Dropout(0.2) (c6)
+c6 = keras.layers.core.Dropout(0.4) (c6)
 
 c6 = keras.layers.convolutional.Conv2D(128, (3, 3),  
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -417,7 +416,7 @@ u7 = concatenate([u7, c3])
 c7 = keras.layers.convolutional.Conv2D(64, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u7)
-c7 = keras.layers.core.Dropout(0.2) (c7)
+c7 = keras.layers.core.Dropout(0.4) (c7)
 c7 = keras.layers.convolutional.Conv2D(64, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
                                        kernel_regularizer=keras.regularizers.l2(0.)) (c7)
@@ -433,7 +432,7 @@ c8 = keras.layers.convolutional.Conv2D(32, (3, 3),
                                        activation='elu', kernel_initializer='he_normal', padding='same',
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u8)
 
-c8 = keras.layers.core.Dropout(0.2) (c8)
+c8 = keras.layers.core.Dropout(0.3) (c8)
 
 c8 = keras.layers.convolutional.Conv2D(32, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -450,7 +449,7 @@ c9 = keras.layers.convolutional.Conv2D(16, (3, 3),
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u9)
 
-c9 = keras.layers.core.Dropout(0.2) (c9)
+c9 = keras.layers.core.Dropout(0.3) (c9)
 
 c9 = keras.layers.convolutional.Conv2D(16, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -463,7 +462,6 @@ outputs = keras.layers.convolutional.Conv2D(1, (1, 1), activation='sigmoid') (c9
 model = keras.models.Model(inputs=[inputs], outputs=[outputs])
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=[mean_iou])
 model.summary()
-
 """#### a) Training set up
 
 A callback is a set of functions to be applied at given stages of the training procedure. You can use callbacks to get a view on internal states and statistics of the model during training.
@@ -501,7 +499,7 @@ print(len(X_train) / 670 * 0.5)
 
 # Keras models are trained on Numpy arrays of input data and labels. For training a model, you will typically use the  fit function.
 earlystopper = keras.callbacks.EarlyStopping(patience=100, verbose=1) 
-checkpointer = keras.callbacks.ModelCheckpoint(MODEL_CHECKPOINT_FILE_NAME, verbose=1, save_best_only=False)
+checkpointer = keras.callbacks.ModelCheckpoint(MODEL_CHECKPOINT_FILE_NAME, verbose=1, save_best_only=True)
 results = model.fit((X_train), (Y_train), validation_split=len(train_ids) / len(X_train) * 0.1, batch_size=16, epochs=100, 
                     callbacks=[earlystopper, checkpointer])
 
