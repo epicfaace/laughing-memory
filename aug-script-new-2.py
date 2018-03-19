@@ -31,7 +31,7 @@ The architecture used is the so-called U-Net, which is very common for image seg
 
 import datetime
 # Notes: this is the same model as (Unet-MeanIoU-100e-Res256-BN-dropA0.2.ipynb - score .339), but with data aug h & v added.
-MODEL_NAME = 'model-dsbowl2018-Data-Aug_lr_ud_elastic-BN-bestOnlyTrue-drop_0.4_0.1-MeanIoU-200e-Res256'
+MODEL_NAME = 'model-dsbowl2018-Data-Aug_lr_ud_elastic-BN-bestOnlyTrue-drop_0.4_0.2-MeanIoU-200e-Res256'
 d = datetime.date.today()
 DIR_NAME = 'Submission Results/{:02d}{:02d}/{}'.format(d.month, d.day, MODEL_NAME)
 MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
@@ -328,7 +328,7 @@ c2 = keras.layers.convolutional.Conv2D(32, (3, 3),
 
 c2 = keras.layers.BatchNormalization()(c2)
 
-c2 = keras.layers.core.Dropout(0.1) (c2)
+c2 = keras.layers.core.Dropout(0.2) (c2)
 
 c2 = keras.layers.convolutional.Conv2D(32, (3, 3),  
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -346,7 +346,7 @@ c3 = keras.layers.convolutional.Conv2D(64, (3, 3),
 
 c3 = keras.layers.BatchNormalization()(c3)
 
-c3 = keras.layers.core.Dropout(0.1) (c3)
+c3 = keras.layers.core.Dropout(0.2) (c3)
 
 c3 = keras.layers.convolutional.Conv2D(64, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -364,7 +364,7 @@ c4 = keras.layers.convolutional.Conv2D(128, (3, 3),
 
 c4 = keras.layers.BatchNormalization()(c4)
 
-c4 = keras.layers.core.Dropout(0.1) (c4)
+c4 = keras.layers.core.Dropout(0.2) (c4)
 
 c4 = keras.layers.convolutional.Conv2D(128, (3, 3),  
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -382,7 +382,7 @@ c5 = keras.layers.convolutional.Conv2D(256, (3, 3),
 
 c5 = keras.layers.BatchNormalization()(c5)
 
-c5 = keras.layers.core.Dropout(0.1) (c5)
+c5 = keras.layers.core.Dropout(0.2) (c5)
 
 c5 = keras.layers.convolutional.Conv2D(256, (3, 3),  
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -401,7 +401,7 @@ c6 = keras.layers.convolutional.Conv2D(128, (3, 3),
                                        activation='elu', kernel_initializer='he_normal', padding='same',
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u6)
 
-c6 = keras.layers.core.Dropout(0.1) (c6)
+c6 = keras.layers.core.Dropout(0.2) (c6)
 
 c6 = keras.layers.convolutional.Conv2D(128, (3, 3),  
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -416,7 +416,7 @@ u7 = concatenate([u7, c3])
 c7 = keras.layers.convolutional.Conv2D(64, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u7)
-c7 = keras.layers.core.Dropout(0.1) (c7)
+c7 = keras.layers.core.Dropout(0.2) (c7)
 c7 = keras.layers.convolutional.Conv2D(64, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
                                        kernel_regularizer=keras.regularizers.l2(0.)) (c7)
