@@ -31,7 +31,7 @@ The architecture used is the so-called U-Net, which is very common for image seg
 
 import datetime
 # Notes: this is the same model as (Unet-MeanIoU-100e-Res256-BN-dropA0.2.ipynb - score .339), but with data aug h & v added.
-MODEL_NAME = 'model-dsbowl2018-Data-Aug-2-lr-ud-BN-bestOnlyTrue-dropA0.1-MeanIoU-200e-Res256'
+MODEL_NAME = 'model-dsbowl2018-Data-Aug-2-lr-ud-BN-bestOnlyTrue-dropA0.1no0.4-MeanIoU-200e-Res256'
 d = datetime.date.today()
 DIR_NAME = 'Submission Results/{:02d}{:02d}/{}'.format(d.month, d.day, MODEL_NAME)
 MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
@@ -310,7 +310,7 @@ c1 = keras.layers.convolutional.Conv2D(16, (3, 3),
 
 c1 = keras.layers.BatchNormalization()(c1)
 
-c1 = keras.layers.core.Dropout(0.4) (c1)
+c1 = keras.layers.core.Dropout(0.1) (c1)
 
 c1 = keras.layers.convolutional.Conv2D(16, (3, 3), 
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
@@ -432,7 +432,7 @@ c8 = keras.layers.convolutional.Conv2D(32, (3, 3),
                                        activation='elu', kernel_initializer='he_normal', padding='same',
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u8)
 
-c8 = keras.layers.core.Dropout(0.4) (c8)
+c8 = keras.layers.core.Dropout(0.1) (c8)
 
 c8 = keras.layers.convolutional.Conv2D(32, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -449,7 +449,7 @@ c9 = keras.layers.convolutional.Conv2D(16, (3, 3),
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u9)
 
-c9 = keras.layers.core.Dropout(0.4) (c9)
+c9 = keras.layers.core.Dropout(0.1) (c9)
 
 c9 = keras.layers.convolutional.Conv2D(16, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same',
