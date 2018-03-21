@@ -30,8 +30,8 @@ The architecture used is the so-called U-Net, which is very common for image seg
 #@title Save augmented data
 
 import datetime
-# Notes: this is the same model as (Unet-MeanIoU-100e-Res256-BN-dropA0.2.ipynb - score .339), but with data aug h & v added.
-MODEL_NAME = 'model-dsbowl2018-Data-Aug_lr_ud_crop_3-BN-bestOnlyTrue-drop_0.4_0.1-MeanIoU-200e-Res256'
+# 
+MODEL_NAME = 'model-dsbowl2018-Data-Aug-2-lr-ud-BN-bestOnlyTrue-dropA0.1_311111123-MeanIoU-200e-Res256'
 d = datetime.date.today()
 DIR_NAME = 'Submission Results/{:02d}{:02d}/{}'.format(d.month, d.day, MODEL_NAME)
 MODEL_NAME = DIR_NAME + "/" + MODEL_NAME
@@ -92,7 +92,7 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
     print("Size of the test set: " + str(len(test_ids)))
     # Get and resize train images and masks(Initialize containers for storing downsampled images)
 
-    num_aug = 5
+    num_aug = 2
     X_train_aug = np.zeros((len(train_ids) * num_aug, IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
     Y_train_aug = np.zeros((len(train_ids) * num_aug, IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
 
@@ -141,16 +141,16 @@ def data_aug(TRAIN_PATH, TEST_PATH, IMG_WIDTH, IMG_HEIGHT, IMG_CHANNELS):
         Y_train_aug[num_aug*n + 0] = np.fliplr(mask)
         X_train_aug[num_aug*n + 1] = img[::-1, :] # vertical flip
         Y_train_aug[num_aug*n + 1] = np.flipud(mask)
-        #X_train_aug[num_aug*n + 2] = elastic_transform(img)
-        #Y_train_aug[num_aug*n + 2] = elastic_transform(mask)
+        """X_train_aug[num_aug*n + 2] = elastic_transform(img)
+        Y_train_aug[num_aug*n + 2] = elastic_transform(mask)
         
-        for index in range(2, 5):
+        for index in range(3, 10):
             randH = random.randint(20,h - 20)
-            randW = randH
-            #randW = random.randint(20,w - 20)
+            randW = random.randint(20,w - 20)
             X_train_aug[num_aug*n + index] = skimage.transform.resize(img[:randH, :randW], (h, w), mode='constant', preserve_range=True)
             Y_train_aug[num_aug*n + index] = skimage.transform.resize(mask[:randH, :randW], (h, w), mode='constant', preserve_range=True)
 
+        """ 
         """skimage.io.imshow(X_train[n])
         plt.show()
         skimage.io.imshow(np.squeeze(Y_train[n]))
@@ -310,7 +310,7 @@ c1 = keras.layers.convolutional.Conv2D(16, (3, 3),
 
 c1 = keras.layers.BatchNormalization()(c1)
 
-c1 = keras.layers.core.Dropout(0.4) (c1)
+c1 = keras.layers.core.Dropout(0.3) (c1)
 
 c1 = keras.layers.convolutional.Conv2D(16, (3, 3), 
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
@@ -432,7 +432,7 @@ c8 = keras.layers.convolutional.Conv2D(32, (3, 3),
                                        activation='elu', kernel_initializer='he_normal', padding='same',
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u8)
 
-c8 = keras.layers.core.Dropout(0.4) (c8)
+c8 = keras.layers.core.Dropout(0.2) (c8)
 
 c8 = keras.layers.convolutional.Conv2D(32, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same',
@@ -449,7 +449,7 @@ c9 = keras.layers.convolutional.Conv2D(16, (3, 3),
                                        activation='elu', kernel_initializer='he_normal', padding='same', 
                                        kernel_regularizer=keras.regularizers.l2(0.)) (u9)
 
-c9 = keras.layers.core.Dropout(0.4) (c9)
+c9 = keras.layers.core.Dropout(0.3) (c9)
 
 c9 = keras.layers.convolutional.Conv2D(16, (3, 3),   
                                        activation='elu', kernel_initializer='he_normal', padding='same',
